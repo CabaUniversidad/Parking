@@ -2,19 +2,32 @@ import flet as ft
 import datetime
 import sys
 import os
-sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from models.Cliente import Cliente
+from models.Auto import Auto
+from models.Moto import Moto
+from services.control import ControlEstacionamiento
+
 colorLetra = ft.Colors.WHITE
 colorInputLetra = ft.Colors.WHITE
 colorFondo = ft.Colors.PINK_600
 
+control = ControlEstacionamiento(capacidad=5, tarifa_auto=10, tarifa_moto=5)
+
 
 def main(page: ft.Page):
-    page.theme_mode = ft.ThemeMode.LIGHT
     titulo = ft.Text("Estacionamiento", size=25, weight=ft.FontWeight.BOLD)
     clienteNombre = ft.TextField(
         label=ft.Text("Nombre Cliente", color=colorInputLetra),
+        text_size=13,
+        height=40,
+        width=200,
+        color=colorInputLetra,
+    )
+
+    clienteApellido = ft.TextField(
+        label=ft.Text("Apellido", color=colorInputLetra),
         text_size=13,
         height=40,
         width=200,
@@ -24,7 +37,7 @@ def main(page: ft.Page):
         label=ft.Text("Telefono Cliente", color=colorInputLetra),
         text_size=13,
         height=40,
-        width=200,
+        width=150,
         color=colorInputLetra,
     )
     direccion = ft.TextField(
@@ -80,21 +93,28 @@ def main(page: ft.Page):
         label=ft.Text("Ingrese Placa", color=colorInputLetra),
         text_size=13,
         height=40,
-        width=200,
+        width=130,
+        color=colorInputLetra,
+    )
+    marca = ft.TextField(
+        label=ft.Text("Ingrese marca", color=colorInputLetra),
+        text_size=13,
+        height=40,
+        width=130,
         color=colorInputLetra,
     )
     color = ft.TextField(
         label=ft.Text("Ingrese Color", color=colorInputLetra),
         text_size=13,
         height=40,
-        width=200,
+        width=130,
         color=colorInputLetra,
     )
     modelo = ft.TextField(
         label=ft.Text("Ingrese Modelo", color=colorInputLetra),
         text_size=13,
         height=40,
-        width=200,
+        width=130,
         color=colorInputLetra,
     )
     tabla = ft.DataTable(
@@ -141,130 +161,9 @@ def main(page: ft.Page):
             "Carro",
             "$10",
             "Pagar",
-        ],
-        [
-            "José Martínez",
-            "331655656",
-            "sucre",
-            "2024-02-20 12:00",
-            "2024-02-20 20:00",
-            "Moto",
-            "$5",
-            "Pagar",
-        ],
-        [
-            "Laura Pérez",
-            "331655656",
-            "sucre",
-            "2024-02-20 13:00",
-            "2024-02-20 21:00",
-            "Carro",
-            "$10",
-            "Pagar",
-        ],
-        [
-            "Carlos Sánchez",
-            "331655656",
-            "sucre",
-            "2024-02-20 14:00",
-            "2024-02-20 22:00",
-            "Moto",
-            "$5",
-            "Pagar",
-        ],
-        [
-            "Sofía Ramírez",
-            "331655656",
-            "sucre",
-            "2024-02-20 15:00",
-            "2024-02-20 23:00",
-            "Carro",
-            "$10",
-            "Pagar",
-        ],
-        [
-            "Jorge Torres",
-            "331655656",
-            "sucre",
-            "2024-02-20 16:00",
-            "2024-02-20 00:00",
-            "Moto",
-            "$5",
-            "Pagar",
-        ],
-        [
-            "Patricia Gómez",
-            "331655656",
-            "sucre",
-            "2024-02-20 17:00",
-            "2024-02-20 01:00",
-            "Carro",
-            "$10",
-            "Pagar",
-        ],
-        [
-            "Daniel Vargas",
-            "331655656",
-            "sucre",
-            "2024-02-20 18:00",
-            "2024-02-20 02:00",
-            "Moto",
-            "$5",
-            "Pagar",
-        ],
-        [
-            "Rosa Mendoza",
-            "331655656",
-            "sucre",
-            "2024-02-20 19:00",
-            "2024-02-20 03:00",
-            "Carro",
-            "$10",
-            "Pagar",
-        ],
-        [
-            "Alberto Silva",
-            "331655656",
-            "sucre",
-            "2024-02-20 20:00",
-            "2024-02-20 04:00",
-            "Moto",
-            "$5",
-            "Pagar",
-        ],
-        [
-            "Elena Ortega",
-            "331655656",
-            "sucre",
-            "2024-02-20 21:00",
-            "2024-02-20 05:00",
-            "Carro",
-            "$10",
-            "Pagar",
-        ],
-        [
-            "Luis Núñez",
-            "331655656",
-            "sucre",
-            "2024-02-20 22:00",
-            "2024-02-20 06:00",
-            "Moto",
-            "$5",
-            "Pagar",
-        ],
-        [
-            "Carmen Guerrero",
-            "331655656",
-            "sucre",
-            "2024-02-20 23:00",
-            "2024-02-20 07:00",
-            "Carro",
-            "$10",
-            "Pagar",
-        ],
+        ]
     ]
 
-    # Agregar filas a la tabla dinámicamente
     for fila in range(len(datos)):
         tabla.rows.append(
             ft.DataRow(
@@ -278,7 +177,7 @@ def main(page: ft.Page):
                     ft.DataCell(ft.Text(datos[fila][6])),
                     ft.DataCell(
                         ft.ElevatedButton(
-                            datos[fila][7],
+                            "Detalle",
                             on_click=lambda e: print(f"Pagar a {datos[fila][0]}"),
                         )
                     ),
@@ -286,10 +185,99 @@ def main(page: ft.Page):
             )
         )
 
+    def verificarEntrada():
+        if not clienteNombre.value.strip():
+            print("Error: El nombre del cliente es obligatorio.")
+            return False
+        if not clienteApellido.value.strip():
+            print("Error: El apellido del cliente es obligatorio.")
+            return False
+        if not telefono.value.strip():
+            print("Error: El teléfono del cliente es obligatorio.")
+            return False
+        if not direccion.value.strip():
+            print("Error: La dirección del cliente es obligatoria.")
+            return False
+        if not precio.value.strip():
+            print("Error: El precio es obligatorio.")
+            return False
+        if not TipoAutomovil.value:
+            print("Error: Debe seleccionar un tipo de automóvil.")
+            return False
+        if not placa.value.strip():
+            print("Error: La placa del vehículo es obligatoria.")
+            return False
+        if not marca.value.strip():
+            print("Error: La marca del vehículo es obligatoria.")
+            return False
+        if not color.value.strip():
+            print("Error: El color del vehículo es obligatorio.")
+            return False
+        if not modelo.value.strip():
+            print("Error: El modelo del vehículo es obligatorio.")
+            return False
+
+        # Verificación de formato numérico en teléfono y precio
+        if not telefono.value.isdigit():
+            print("Error: El teléfono debe contener solo números.")
+            return False
+        """try:
+            float(precio.value)  # Intentar convertir el precio a número
+        except ValueError:
+            print("Error: El precio debe ser un número válido.")
+            return False
+
+        print("✅ Todos los campos son válidos.")"""
+        return True
+
     def guardarD(e):
-        print("ssssss")
-        cli=Cliente(1, "franz", "caballero", "gmail")
-        cli.agregar_vehiculo(clienteNombre.value)
+        if not verificarEntrada():
+            pass
+        else:
+            print("ssssss")
+            cli = Cliente(
+                1,
+                clienteNombre.value,
+                clienteApellido.value,
+                telefono.value,
+                direccion.value,
+            )
+            auto1 = Auto(placa.value, color.value, marca.value, modelo.value, 4)
+            cli.agregar_vehiculo(auto1)
+            control.estacionar(cli)
+            tabla.rows.append(
+                ft.DataRow(
+                    cells=[
+                        ft.DataCell(
+                            ft.Text(clienteNombre.value)
+                        ),
+                        ft.DataCell(
+                            ft.Text(telefono.value),
+                        ),
+                        ft.DataCell(
+                            ft.Text(direccion.value),
+                        ),
+                        ft.DataCell(
+                            ft.Text(fechaActualPar.value),
+                        ),
+                        ft.DataCell(
+                            ft.Text(fechaTiempoparking.value)
+                        ),
+                        ft.DataCell(
+                            ft.Text(TipoAutomovil.value)
+                        ),
+                        ft.DataCell(
+                            ft.Text('5')
+                        ),ft.DataCell(
+                        ft.ElevatedButton(
+                            "Detalle",
+                            on_click=lambda e: print(f"Pagar a {clienteNombre.value}"),
+                        )
+                    ),
+                    ]
+                )
+            )
+        page.update()
 
     contenido = ft.Container(
         expand=True,
@@ -324,6 +312,7 @@ def main(page: ft.Page):
                                                         ft.Row(
                                                             controls=[
                                                                 clienteNombre,
+                                                                clienteApellido,
                                                                 telefono,
                                                                 direccion,
                                                             ]
@@ -352,6 +341,7 @@ def main(page: ft.Page):
                                                         ft.Row(
                                                             controls=[
                                                                 placa,
+                                                                marca,
                                                                 color,
                                                                 modelo,
                                                                 TipoAutomovil,
@@ -444,9 +434,6 @@ def main(page: ft.Page):
     )
     page.add(contenido)
 
-    def handle_change(self, e):
-        self.fechaTiempoparking.value = e.control.value.strftime("%Y-%m-%d")
-        self.page.update()
-
-
-ft.app(target=main)
+    def handle_change(e):
+        fechaTiempoparking.value = e.control.value.strftime("%Y-%m-%d")
+        page.update()

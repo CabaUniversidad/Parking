@@ -7,8 +7,13 @@ class ParkingService:
     def estacionar_vehiculo(self, vehiculo):
         if len(self.vehiculos) < self.capacidad:
             print(len(self.vehiculos)+1,"--",self.capacidad)
+            print("--[:",self.vehiculos)
             self.vehiculos.append(vehiculo)
-            print(f"Vehículo con placa {vehiculo.placa} estacionado.")
+            """print(f"otr--:{vehiculo.vehiculos[0].placa}")
+            print(f"Vehículo con placa {vehiculo.vehiculos[0].placa} estacionado.")
+            print(f"n-Auto estacionados:{self.vehiculos[0].vehiculos[0].placa}")
+            for i in self.vehiculos:
+                print(i.vehiculos[0].placa)"""
         else:
             print("No hay espacio disponible para estacionar más vehículos.")
 

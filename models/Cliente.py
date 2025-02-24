@@ -4,10 +4,11 @@ from interface.clienteInterface import clienteInterface
 
 
 class Cliente(Persona, clienteInterface):
-    def __init__(self, id, nombre, apellido, email):
+    def __init__(self, id, nombre, apellido,telefono, direccion):
         super().__init__(nombre, apellido)
         self.id = id
-        self.email = email
+        self.telefono = telefono
+        self.direccion = direccion
         self.vehiculos = []
 
     def agregar_vehiculo(self, vehiculo):
